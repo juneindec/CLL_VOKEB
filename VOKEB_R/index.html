@@ -46,6 +46,30 @@
 		@keyframes preloader_spin { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
 		@-webkit-keyframes preloader_spin { 0% {-webkit-transform: rotate(0deg);} 100% {-webkit-transform: rotate(360deg);}}
     </style>
+<style>
+/* 1) Hide or neutralize iSpring watermark/popups in the top-right corner */
+.ispring-about, .ispring-logo, .ispring-popup, div[title*="iSpring"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Fallback: catch any absolutely-positioned element in the top-right */
+body > div[style*="position"][style*="absolute"][style*="top"][style*="right"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 2) Bring your audio/control UI above everything (if it was under the logo) */
+audio, .controls, .mejs-container, .mejs-controls, button[title*="audio"], [aria-label*="audio"] {
+  position: relative !important;
+  z-index: 99999 !important;
+}
+</style>
+
 </head>
 <body>
 	<div id="preloader"></div>
