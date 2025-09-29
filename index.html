@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <title>CLL_VOKEB</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-    h1 { margin-bottom: 40px; }
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9f9f9; }
+    h1 { margin-bottom: 40px; color: #333; }
     .menu { display: flex; flex-direction: column; gap: 20px; align-items: center; }
     a {
       display: inline-block;
@@ -15,8 +15,31 @@
       text-decoration: none;
       border-radius: 8px;
       font-size: 18px;
+      width: 250px;
+      text-align: center;
     }
-    a:hover { background: #fcc200; }
+    a:hover { background: #45a049; }
+
+    /* Hide iSpring watermark/logo */
+    .ispring-about, .ispring-logo, .ispring-popup, div[title*="iSpring"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    body > div[style*="position"][style*="absolute"][style*="top"][style*="right"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* Force audio controls above everything */
+    audio, .controls, .mejs-container, .mejs-controls,
+    button[title*="audio"], [aria-label*="audio"] {
+      position: relative !important;
+      z-index: 99999 !important;
+    }
   </style>
 </head>
 <body>
