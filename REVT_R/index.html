@@ -47,28 +47,68 @@
 		@-webkit-keyframes preloader_spin { 0% {-webkit-transform: rotate(0deg);} 100% {-webkit-transform: rotate(360deg);}}
     </style>
 <style>
-/* 1) Hide or neutralize iSpring watermark/popups in the top-right corner */
-.ispring-about, .ispring-logo, .ispring-popup, div[title*="iSpring"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Fallback: catch any absolutely-positioned element in the top-right */
-body > div[style*="position"][style*="absolute"][style*="top"][style*="right"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* 2) Bring your audio/control UI above everything (if it was under the logo) */
-audio, .controls, .mejs-container, .mejs-controls, button[title*="audio"], [aria-label*="audio"] {
-  position: relative !important;
-  z-index: 99999 !important;
-}
+  /* Make sure audio/controls are on top */
+  audio, .mejs-container, .mejs-controls, [role="audio"], [aria-label*="audio"] {
+    position: relative !important;
+    z-index: 99999 !important;
+  }
 </style>
+<script>
+(function () {
+  function nuke(doc) {
+    try {
+      // 1) Remove common iSpring-branded nodes by attribute/class
+      const sels = [
+        '[title*="iSpring"]',
+        '[aria-label*="iSpring"]',
+        'a[href*="ispring"]',
+        'img[src*="ispring"]',
+        '[class*="ispring"]',
+        '[id*="ispring"]'
+      ];
+      sels.forEach(sel => doc.querySelectorAll(sel).forEach(el => el.remove()));
+
+      // 2) Remove small absolute/fixed boxes at top-right that contain "ispring" text
+      Array.from(doc.querySelectorAll('div, a, span')).forEach(el => {
+        const s = getComputedStyle(el);
+        if (
+          (s.position === 'absolute' || s.position === 'fixed') &&
+          parseInt(s.top || '9999', 10) <= 60 &&
+          parseInt(s.right || '9999', 10) <= 60 &&
+          el.textContent && /ispring/i.test(el.textContent) &&
+          el.offsetWidth <= 260 && el.offsetHeight <= 160
+        ) {
+          el.remove();
+        }
+      });
+
+      // 3) Ensure audio elements float above everything
+      doc.querySelectorAll('audio, .mejs-container, .mejs-controls, [role="audio"], [aria-label*="audio"]').forEach(el => {
+        el.style.position = 'relative';
+        el.style.zIndex = 99999;
+      });
+    } catch (e) { /* ignore */ }
+  }
+
+  function sweepAll() {
+    nuke(document);
+    // Handle iSpring content inside same-origin iframes
+    document.querySelectorAll('iframe').forEach(ifr => {
+      try {
+        if (ifr.contentDocument) nuke(ifr.contentDocument);
+      } catch (e) { /* cross-origin; skip */ }
+    });
+  }
+
+  // Initial pass + watch for dynamically created nodes
+  sweepAll();
+  const mo = new MutationObserver(sweepAll);
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+  // Extra safety: periodic sweep
+  setInterval(sweepAll, 1000);
+})();
+</script>
+
 
 </head>
 <body>
